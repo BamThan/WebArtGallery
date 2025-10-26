@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS artdb;
+USE artdb;
+
+CREATE TABLE IF NOT EXISTS images (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    filename VARCHAR(255) NOT NULL,
+    mime_type VARCHAR(50) NOT NULL,
+    description TEXT,
+    data LONGBLOB NOT NULL
+);

@@ -1,0 +1,40 @@
+version: "3.9"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: artdb-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass123
+      MYSQL_DATABASE: artdb
+      MYSQL_USER: artuser
+      MYSQL_PASSWORD: artpass123
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./db/init:/docker-entrypoint-initdb.d
+
+  app:
+    build:
+      context: ./app
+      dockerfile: backend/Dockerfile
+    container_name: artgallery-app
+    environment:
+      PORT: 8080
+      DB_HOST: mysql
+      DB_USER: artuser
+      DB_PASSWORD: artpass123
+      DB_NAME: artdb
+      DB_PORT: 3306
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./app/seed_images:/app/seed_images
+      - ./app/frontend:/app/public
+    depends_on:
+      - mysql
+    restart: unless-stopped
+
+volumes:
+  db_data:
