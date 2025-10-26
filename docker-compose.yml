@@ -14,12 +14,31 @@ services:
     volumes:
       - db_data:/var/lib/mysql
       - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      - gallery_app
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: art-phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: root
+      PMA_PASSWORD: rootpass123
+    ports: 
+      - "8082:80"
+    depends_on:
+      - mysql
+    networks:
+      - gallery_app
+
 
   app:
     build:
       context: ./app
       dockerfile: backend/Dockerfile
     container_name: artgallery-app
+    env_file:
+      - ./app/backend/.env
     environment:
       PORT: 8080
       DB_HOST: mysql
@@ -35,6 +54,12 @@ services:
     depends_on:
       - mysql
     restart: unless-stopped
+    networks:
+      - gallery_app
+
+networks:
+  gallery_app:
+    driver: bridge
 
 volumes:
   db_data:
